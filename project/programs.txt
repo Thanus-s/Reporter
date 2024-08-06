@@ -1,0 +1,914 @@
+dag->
+#include<stdio.h>
+#include<string.h>
+
+#define MAX_LIMIT 25
+
+struct da {
+    int ptr, left, right;
+    char label;
+};
+
+int main() {
+    struct da dag[MAX_LIMIT];
+    char input1[MAX_LIMIT], input[MAX_LIMIT];
+    int n = 0, i, j, x, k, ptr;
+    char store, var;
+
+    for(i = 0; i < MAX_LIMIT; i++) {
+        dag[i].ptr = dag[i].left = dag[i].right = dag[i].label = 0;
+    }
+
+    printf("\n\nENTER THE EXPRESSION\n\n");
+    fgets(input1, MAX_LIMIT, stdin);
+
+    for(i = 0; i < MAX_LIMIT; i++) {
+        input[i] = '\0';
+    }
+
+    for(i = 0; input1[i] != '\0'; i++) {
+        if(input1[i] == '(' || input1[i] == ')') continue;
+        if(isalpha(input1[i])) {
+            input[n++] = input1[i];
+        } else if(input1[i] != '0') {
+            store = input1[i];
+        }
+        input[n++] = store;
+    }
+
+    for(i = 0; input1[i] != '0'; i++) {
+        input1[i] = '0';
+    }
+
+    for(i = 0; i < n; i++) {
+        dag[i].label = input[i];
+        dag[i].ptr = i;
+
+        if(!isalpha(input[i]) && !isdigit(input[i])) {
+            dag[i].right = i - 1;
+            ptr = i;
+            var = input[i - 1];
+
+            if(isalpha(var)) ptr = ptr - 2;
+            else {
+                ptr = i - 1;
+                while(!isalpha(var) && !isdigit(var)) {
+                    ptr = dag[ptr].left;
+                    var = input[ptr];
+                }
+                ptr = ptr - 1;
+            }
+            dag[i].left = ptr;
+        }
+    }
+
+    for(i = 0; i < n; i++) {
+        for(j = 0; j < n; j++) {
+            if((dag[i].label == dag[j].label && dag[i].left == dag[j].left) && dag[i].right == dag[j].right) {
+                for(k = 0; k < n; k++) {
+                    if(dag[k].left == dag[j].ptr) dag[k].left = dag[i].ptr;
+                    if(dag[k].right == dag[j].ptr) dag[k].right = dag[i].ptr;
+                }
+                dag[j].ptr = dag[i].ptr;
+            }
+        }
+    }
+
+    printf("\n DAG FOR GIVEN EXPRESSION\n\n");
+    printf("\n\n PTR \t LEFT PTR \t RIGHT PTR \t LABEL \n\n");
+    for(i = 0; i < n; i++) {
+        printf("\n %d \t\t%d\t\t%d\t\t%c\n", dag[i].ptr, dag[i].left, dag[i].right, dag[i].label);
+    }
+
+    return 0;
+}
+
+
+
+symbol table:->
+
+#include<stdio.h>
+#include<string.h>
+int main(){
+    char str1[100];
+    char newstring[10][10];
+    char types[3][10]={"int","float","char"};
+    int i,j,ctr,incr,size;
+    printf("enter the string:");
+    fgets(str1,sizeof(str1),stdin);
+    j=0;
+    ctr=0;
+    for(i=0;i<=strlen(str1);i++){
+        if(str1[i]==' '|| str1[i]==',' || str1[i]=='\0'){
+            newstring[ctr][j]='\0';
+            ctr++;
+            j=0;
+        }
+        else{
+            newstring[ctr][j]=str1[i];
+            j++;
+        }
+    }
+    printf("symbol table");
+    printf("\n symbol\taddress\ttype\tdatatype\tsize");
+    for(i=0;i<ctr;i++){
+        incr=i+1;
+        if(strcmp(newstring[0],types[0])==0){
+            size=2;
+        }
+        else if(strcmp(newstring[0],types[1])==0){
+            size=4;
+        }
+        else if(strcmp(newstring[0],types[3])==0){
+            size=1;
+        }
+        if(incr<ctr){
+            printf("\n%s\t%u\tidentifier\t%s\t%d",newstring[incr],&newstring[incr],newstring[0],size);
+        }
+        else{
+            break;
+        }
+    }
+}
+
+
+lex tool-> 
+
+%{
+#include <stdio.h>
+%}
+
+%%
+
+int|float|double|void|short|char {
+	printf("Keyword: %s\n", yytext);
+}
+
+[a-zA-Z][a-zA-Z0-9]* {
+	printf("Identifier: %s\n", yytext);
+}
+
+; {
+	printf("Semi colon: ';'\n");
+}
+
+\= {
+	printf("Equal: '='\n");
+}
+
+[\+\-\*\/] {
+	printf("Arithmetic Operator: %s\n", yytext);
+}
+
+[0-9]+ {
+	printf("Number: %s\n", yytext);
+}
+
+%%
+
+int main(void) {
+	yylex();
+	printf("Lexing done!\n");
+	return 0;
+}
+
+
+command or not->
+
+#include<stdio.h>
+#include<string.h>
+#define MAX_LIMIT 50
+
+// Function to check if the given // string is a comment or not
+void isComment(char line[], int line_len)
+{
+// If two continuous slashes precedes the comment
+if (line[0] == '/' && line[1] == '/' && line[2] !='/')
+{
+printf("It is a single-line comment");
+return;
+}
+if (line[line_len-3] == '*' && line[line_len-2] == '/' && line[0] == '/' && line[1] =='*')
+{
+printf("It is a multi-line comment");
+return;
+}
+printf("It is not a comment");
+return;
+}
+
+int main()
+{
+// Given string
+char line[MAX_LIMIT];
+int line_len;
+printf("Enter the statement to be checked:");
+fgets(line, MAX_LIMIT, stdin);
+printf("%s", line);
+line_len = strlen(line);
+printf("%d\n",line_len);
+// Function call to check whether then given string is a comment or not
+isComment(line, line_len);
+return 0;
+}
+  
+
+yaac arithmatic->
+
+Ex4a_Lex.l
+%{
+#include"y.tab.h"extern yylval;
+%}
+%%
+[0-9]+ {yylval=atoi(yytext); return NUMBER;}
+[a-zA-Z]+ {return ID;}
+[\t]+ ;
+\n {return 0;}
+. {return yytext[0];}
+%%
+Ex4a.Yacc.y
+%{
+#include<stdio.h>
+%}
+%token NUMBER ID
+%left '+''-'
+%left '*' '/'
+%%
+expr: expr &#39;+&#39; expr
+|expr &#39;-&#39; expr
+|expr &#39;*&#39; expr
+|expr &#39;/&#39; expr
+|&#39;-&#39;NUMBER|
+&#39;-&#39;ID
+|&#39;(&#39;expr&#39;)&#39;
+|NUMBER
+|ID;
+%%
+main()
+{
+printf(&quot;Enter the expression\n&quot;);
+yyparse();
+printf(&quot;\nExpression is valid\n&quot;);
+exit(0);
+}
+int yyerror(char *s)
+{
+printf(&quot;\nExpression is invalid&quot;);
+exit(0);
+}
+
+
+
+variable->
+
+%{
+#include&quot;y.tab.h&quot;extern yylval;
+%}
+%%
+[0-9]+ {yylval=atoi(yytext); return DIGIT;}
+[a-zA-Z]+ {return LETTER;}
+[\t] ;
+\n return 0;
+.{return yytext[0];}
+%%
+Ex4b_Yacc.y
+%{
+#include&lt;stdio.h&gt;
+%}
+%token LETTER DIGIT
+%%
+variable: LETTER|LETTER rest
+;
+rest: LETTER rest
+|DIGIT rest
+|LETTER
+|DIGIT
+;
+%%
+main()
+{
+yyparse();
+printf(&quot;The string is a valid variable\n&quot;);
+}
+int yyerror(char *s)
+{
+printf(&quot;this is not a valid variable\n&quot;);
+exit(0);
+}
+
+
+
+dataflow->
+
+#include<stdio.h>
+#include<string.h>
+struct op
+{
+char l[20];
+char r[20];
+} op[10], pr[10];
+void main( )
+{
+int a, i, k, j, n, z=0, m, q, lineno=1;
+char *p, *l;
+char temp, t;
+char *tem, *match;
+printf("Enter number expressions\n");
+scanf("%d\n",&n);
+for(i=0;i<=n;i++)
+{
+printf("\tleft\t");
+scanf("%s",op[i].l);
+printf("\tright\t");
+scanf("%s",op[i].r);
+
+}
+printf("Intermediate Code\n");
+for (i=0;i<n;i++)
+{
+printf("Line number = %d\n", lineno);
+printf("\t\t\t%s=",op[i].l);
+printf("%s\n",op[i].r);
+lineno++;
+}
+printf("***** Data Flow Analysis of the Above Code ****\n");
+for(i=0;i<n;i++)
+{
+for(j=0;j<n;j++)
+{
+match=strstr(op[j].r,op[i].l);
+if(match)
+{
+printf("\n %s is live at %s\n",op[i].l,op[j].r);
+}
+}
+}
+}
+
+
+The use of malloc allows us to define size of array at run time.->
+
+#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+int main()
+{
+int n;
+printf(&quot;Enter the size of array: &quot;);
+scanf(&quot;%d&quot;, &amp;n);
+int *myArray = (int*) malloc(n*sizeof(int));
+for(int i=0; i&lt;n; i++)
+{ myArray[i] = i+1;
+}
+for(int i=0; i&lt;n; i++)
+{ printf(&quot;%d \t&quot;, myArray[i]);
+}
+}
+
+
+a and b->
+
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+int n;
+printf("Enter the size of array: ");
+scanf("%d",&n);
+int *A = (int*) malloc(n*sizeof(int));
+for(int i=0; i<n; i++)
+{
+A[i]=i+1;
+}
+int *B = (int*) realloc(A, 2*n*sizeof(int));
+printf("Prev. block address= %d, New address= %d \n", A, B);
+for(int i=0; i<2*n; i++)
+{ printf("%d \n", B[i]);
+}
+}
+
+
+//Let’s look at example code – Free() the block of memory->
+
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+int n;
+printf("Enter the size of array: ");
+scanf("%d", &n);
+int *myArray = (int*) malloc(n*sizeof(int));
+for(int i=0; i<n; i++)
+{
+myArray[i]=i+1;
+}
+free(myArray);
+for(int i=0; i<n; i++)
+{
+printf("%d \t", myArray[i]);
+}
+}
+
+
+generation->
+
+#include&lt;stdio.h&gt;
+#include&lt;stdio.h&gt;
+//#include&lt;conio.h&gt;
+#include&lt;string.h&gt;
+void main()
+{
+char icode[10][30],str[20],opr[10];
+int i=0;
+//clrscr();
+printf(&quot;\n Enter the set of intermediate code (terminated by exit):\n&quot;);
+do
+{
+scanf(&quot;%s&quot;,icode[i]);
+} while(strcmp(icode[i++],&quot;exit&quot;)!=0);
+printf(&quot;\n target code generation&quot;);
+printf(&quot;\n************************&quot;);
+i=0;
+do
+{
+strcpy(str,icode[i]);
+switch(str[3])
+{
+case &#39;+&#39;:
+strcpy(opr,&quot;ADD &quot;);
+break;
+case &#39;-&#39;:
+strcpy(opr,&quot;SUB &quot;);
+break;
+case &#39;*&#39;:
+strcpy(opr,&quot;MUL &quot;);
+break;
+case &#39;/&#39;:
+strcpy(opr,&quot;DIV &quot;);
+break;
+}
+printf(&quot;fourth string = %c\n&quot;,str[4]);
+printf(&quot;\n\tMov %c,R%d&quot;,str[2],i);
+printf(&quot;\n\t%s%c,R%d&quot;,opr,str[4],i);
+printf(&quot;\n\tMov R%d,%c&quot;,i,str[0]);
+}while(strcmp(icode[++i],&quot;exit&quot;)!=0);
+//getch();
+}
+
+
+
+optimixe-> 
+
+#include <stdio.h>
+#include <string.h>
+
+struct op {
+    char l;
+    char r[20];
+};
+
+int main() {
+    int i, j, n, z = 0;
+    char temp;
+    struct op op[10], pr[10];
+
+    printf("Enter the Number of Values: ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        printf("Enter the value of left: ");
+        scanf(" %c", &op[i].l);
+        printf("Enter the right value: ");
+        scanf("%s", op[i].r);
+    }
+
+    printf("\nIntermediate Code\n");
+    for (i = 0; i < n; i++) {
+        printf("%c=%s\n", op[i].l, op[i].r);
+    }
+
+    for (i = 0; i < n; i++) {
+        temp = op[i].l;
+        for (j = 0; j < n; j++) {
+            if (strchr(op[j].r, temp)) {
+                pr[z++] = op[i];
+                break;
+            }
+        }
+    }
+
+    printf("\nAfter Dead Code Elimination\n");
+    for (int k = 0; k < z; k++) {
+        printf("%c=%s\n", pr[k].l, pr[k].r);
+    }
+
+    for (int m = 0; m < z; m++) {
+        char *tem = pr[m].r;
+        for (j = m + 1; j < z; j++) {
+            if (strstr(tem, pr[j].r)) {
+                pr[j].l = pr[m].l;
+                for (i = 0; i < z; i++) {
+                    char *l = strchr(pr[i].r, pr[j].l);
+                    if (l) pr[i].r[l - pr[i].r] = pr[m].l;
+                }
+            }
+        }
+    }
+    printf("\nEliminate Common Expression\n");
+    for (i = 0; i < z; i++) {
+        printf("%c=%s\n", pr[i].l, pr[i].r);
+    }
+
+    for (i = 0; i < z; i++) {
+        for (j = i + 1; j < z; j++) {
+            if (pr[i].l == pr[j].l && strcmp(pr[i].r, pr[j].r) == 0) {
+                pr[i].l = '\0';
+                pr[i].r[0] = '\0';
+            }
+        }
+    }
+    printf("\nOptimized Code\n");
+    for (i = 0; i < z; i++) {
+        if (pr[i].l != '\0') {
+            printf("%c=%s\n", pr[i].l, pr[i].r);
+        }
+    }
+    return 0;
+}
+
+
+ll(1)->
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_PRODUCTIONS 10
+#define MAX_SYMBOLS 10
+
+struct prod {
+    char lhs;
+    char rhs[MAX_SYMBOLS];
+    int n;
+} productions[MAX_PRODUCTIONS];
+
+void addSymbol(char *set, char symbol);
+void findFirst(char symbol, char *first, int *visited);
+void findFollow(char symbol, char *follow, int *visited);
+int isNullable(char symbol);
+
+int main() {
+    int numProductions;
+    printf("Enter the number of productions: ");
+    scanf("%d", &numProductions);
+
+    // Read productions from the user
+    for (int i = 0; i < numProductions; i++) {
+        printf("Enter production %d (lhs rhs): ", i + 1);
+        scanf(" %c %s", &productions[i].lhs, productions[i].rhs);
+        productions[i].n = strlen(productions[i].rhs);
+    }
+
+    // Compute FIRST sets
+    printf("\nFIRST Sets:\n");
+    for (int i = 0; i < numProductions; i++) {
+        char first[MAX_SYMBOLS] = {0};
+        int visited[MAX_PRODUCTIONS] = {0};
+        findFirst(productions[i].lhs, first, visited);
+        printf("FIRST(%c) = {%s}\n", productions[i].lhs, first);
+    }
+
+    // Compute FOLLOW sets
+    printf("\nFOLLOW Sets:\n");
+    for (int i = 0; i < numProductions; i++) {
+        char follow[MAX_SYMBOLS] = {0};
+        int visited[MAX_PRODUCTIONS] = {0};
+        if (i == 0) {
+            addSymbol(follow, '$');
+        }
+        findFollow(productions[i].lhs, follow, visited);
+        printf("FOLLOW(%c) = {%s}\n", productions[i].lhs, follow);
+    }
+
+    return 0;
+}
+
+void addSymbol(char *set, char symbol) {
+    if (strchr(set, symbol) == NULL) {
+        int len = strlen(set);
+        set[len] = symbol;
+        set[len + 1] = '\0';
+    }
+}
+
+void findFirst(char symbol, char *first, int *visited) {
+    visited[symbol - 'A'] = 1;
+    if (!isupper(symbol)) {
+        addSymbol(first, symbol);
+        return;
+    }
+    for (int i = 0; i < MAX_PRODUCTIONS; i++) {
+        if (productions[i].lhs == symbol) {
+            if (productions[i].rhs[0] == '\0') {
+                addSymbol(first, '$');
+            } else if (!isupper(productions[i].rhs[0])) {
+                addSymbol(first, productions[i].rhs[0]);
+            } else {
+                if (!visited[productions[i].rhs[0] - 'A']) {
+                    findFirst(productions[i].rhs[0], first, visited);
+                }
+            }
+        }
+    }
+}
+
+void findFollow(char symbol, char *follow, int *visited) {
+    visited[symbol - 'A'] = 1;
+    for (int i = 0; i < MAX_PRODUCTIONS; i++) {
+        for (int j = 0; j < productions[i].n; j++) {
+            if (productions[i].rhs[j] == symbol) {
+                if (j == productions[i].n - 1) {
+                    if (!visited[productions[i].lhs - 'A']) {
+                        findFollow(productions[i].lhs, follow, visited);
+                    }
+                } else if (!isupper(productions[i].rhs[j + 1])) {
+                    addSymbol(follow, productions[i].rhs[j + 1]);
+                } else {
+                    for (int k = j + 1; k < productions[i].n; k++) {
+                        if (!visited[productions[i].rhs[k] - 'A']) {
+                            char temp[MAX_SYMBOLS] = {0};
+                            findFirst(productions[i].rhs[k], temp, visited);
+                            for (int l = 0; temp[l] != '\0'; l++) {
+                                if (temp[l] != '$') {
+                                    addSymbol(follow, temp[l]);
+                                } else {
+                                    if (!visited[productions[i].lhs - 'A']) {
+                                        findFollow(productions[i].lhs, follow, visited);
+                                    }
+                                }
+                            }
+                        }
+                        if (!isNullable(productions[i].rhs[k])) {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+int isNullable(char symbol) {
+    for (int i = 0; i < MAX_PRODUCTIONS; i++) {
+        if (productions[i].lhs == symbol && productions[i].rhs[0] == '\0') {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+lalr->
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void push(char *, int *, char);
+char stacktop(char *);
+void isproduct(char, char);
+int ister(char);
+int isnter(char);
+int isstate(char);
+void error();
+void isreduce(char, char);
+char pop(char *, int *);
+void printt(char *, int *, char[], int);
+void rep(char[], int);
+
+struct action {
+    char row[6][5];
+};
+const struct action A[12] = {
+    {"sf", "emp", "emp", "se", "emp", "emp"},
+    {"emp", "sg", "emp", "emp", "emp", "acc"},
+    {"emp", "rc", "sh", "emp", "rc", "rc"},
+    {"emp", "re", "re", "emp", "re", "re"},
+    {"sf", "emp", "emp", "se", "emp", "emp"},
+    {"emp", "rg", "rg", "emp", "rg", "rg"},
+    {"sf", "emp", "emp", "se", "emp", "emp"},
+    {"sf", "emp", "emp", "se", "emp", "emp"},
+    {"emp", "sg", "emp", "emp", "sl", "emp"},
+    {"emp", "rb", "sh", "emp", "rb", "rb"},
+    {"emp", "rb", "rd", "emp", "rd", "rd"},
+    {"emp", "rf", "rf", "emp", "rf", "rf"}};
+struct gotol {
+    char r[3][4];
+};
+const struct gotol G[12] = {
+    {"b", "c", "d"},
+    {"emp", "emp", "emp"},
+    {"emp", "emp", "emp"},
+    {"emp", "emp", "emp"},
+    {"i", "c", "d"},
+    {"emp", "emp", "emp"},
+    {"emp", "j", "d"},
+    {"emp", "emp", "k"},
+    {"emp", "emp", "emp"},
+    {"emp", "emp", "emp"}};
+
+char ter[6] = {'i', '+', '*', ')', '(', '$'};
+char nter[3] = {'E', 'T', 'F'};
+char states[12] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'm', 'j', 'k', 'l'};
+char stack[100];
+int top = -1;
+char temp[10];
+
+struct grammar {
+    char left;
+    char right[5];
+};
+const struct grammar rl[6] = {
+    {'E', "e+T"},
+    {'E', "T"},
+    {'T', "T*F"},
+    {'T', "F"},
+    {'F', "(E)"},
+    {'F', "i"}};
+
+void main() {
+    char inp[80], x, p, dl[80], y, bl = 'a';
+    int i = 0, j, k, l, n, m, c, len;
+    printf("Enter the input: ");
+    scanf("%s", inp);
+    len = strlen(inp);
+    inp[len] = '$';
+    inp[len + 1] = '\0';
+    push(stack, &top, bl);
+    printf("\nstack\t\t\tinput");
+    printt(stack, &top, inp, i);
+    do {
+        x = inp[i];
+        p = stacktop(stack);
+        isproduct(x, p);
+        if (strcmp(temp, "emp") == 0)
+            error();
+        if (strcmp(temp, "acc") == 0)
+            break;
+        else {
+            if (temp[0] == 's') {
+                push(stack, &top, inp[i]);
+                push(stack, &top, temp[1]);
+                i++;
+            } else {
+                if (temp[0] == 'r') {
+                    j = isstate(temp[1]);
+                    strcpy(temp, rl[j - 2].right);
+                    dl[0] = rl[j - 2].left;
+                    dl[1] = '\0';
+                    n = strlen(temp);
+                    for (k = 0; k < 2 * n; k++)
+                        pop(stack, &top);
+                    for (m = 0; dl[m] != '\0'; m++)
+                        push(stack, &top, dl[m]);
+                    l = top;
+                    y = stack[l - 1];
+                    isreduce(y, dl[0]);
+                    for (m = 0; temp[m] != '\0'; m++)
+                        push(stack, &top, temp[m]);
+                }
+            }
+        }
+        printt(stack, &top, inp, i);
+    } while (inp[i] != '\0');
+    if (strcmp(temp, "acc") == 0)
+        printf("\nAccepted input\n");
+    else
+        printf("\nRejected input\n");
+}
+
+void push(char *s, int *sp, char item) {
+    if (*sp == 100)
+        printf("Stack is full\n");
+    else {
+        *sp = *sp + 1;
+        s[*sp] = item;
+    }
+}
+
+char stacktop(char *s) {
+    char i;
+    i = s[top];
+    return i;
+}
+
+void isproduct(char x, char p) {
+    int k, l;
+    k = ister(x);
+    l = isstate(p);
+    strcpy(temp, A[l - 1].row[k - 1]);
+}
+
+int ister(char x) {
+    int i;
+    for (i = 0; i < 6; i++)
+        if (x == ter[i])
+            return i + 1;
+    return 0;
+}
+
+int isnter(char x) {
+    int i;
+    for (i = 0; i < 3; i++)
+        if (x == nter[i])
+            return i + 1;
+    return 0;
+}
+
+int isstate(char p) {
+    int i;
+    for (i = 0; i < 12; i++)
+        if (p == states[i])
+            return i + 1;
+    return 0;
+}
+
+void error() {
+    printf("Error in the input\n");
+    exit(0);
+}
+
+void isreduce(char x, char p) {
+    int k, l;
+    k = isstate(x);
+    l = isnter(p);
+    strcpy(temp, G[k - 1].r[l - 1]);
+}
+
+char pop(char *s, int *sp) {
+    char item;
+    if (*sp == -1)
+        printf("Stack is empty\n");
+    else {
+        item = s[*sp];
+        *sp = *sp - 1;
+    }
+    return item;
+}
+
+void printt(char *t, int *p, char inp[], int i) {
+    int r;
+    printf("\n");
+    for (r = 0; r <= *p; r++)
+        rep(t, r);
+    printf("\t\t\t");
+    for (r = i; inp[r] != '\0'; r++)
+        printf("%c", inp[r]);
+}
+
+void rep(char t[], int r) {
+    char c;
+    c = t[r];
+    switch (c) {
+    case 'a':
+        printf("0");
+        break;
+    case 'b':
+        printf("1");
+        break;
+    case 'c':
+        printf("2");
+        break;
+    case 'd':
+        printf("3");
+        break;
+    case 'e':
+        printf("4");
+        break;
+    case 'f':
+        printf("5");
+        break;
+    case 'g':
+        printf("6");
+        break;
+    case 'h':
+        printf("7");
+        break;
+    case 'm':
+        printf("8");
+        break;
+    case 'j':
+        printf("9");
+        break;
+    case 'k':
+        printf("10");
+        break;
+    case 'l':
+        printf("11");
+        break;
+    default:
+        printf("%c", t[r]);
+        break;
+    }
+}
+

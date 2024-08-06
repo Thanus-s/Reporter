@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Report</title>
+    <style>
+        /* Styles for A4 sheet division */
+        .a4-sheet {
+            width: 210mm; /* Width of A4 sheet in millimeters */
+            height: 297mm; /* Height of A4 sheet in millimeters */
+            border: 1px solid black; /* Border for visualization */
+            padding: 10px; /* Adding padding for visualization */
+            margin: 0 auto; /* Centering the div horizontally */
+            position: relative; /* Make it a relative position container */
+            overflow: hidden; /* Prevent content overflow */
+        }
+        .qqq{
+            width: 200mm; /* Width of A4 sheet in millimeters */
+            height: 145mm; /* Height of A4 sheet in millimeters */
+            border: 1px solid black; /* Border for visualization */
+            padding: 10px; /* Adding padding for visualization */
+            margin: 0 auto; /* Centering the div horizontally */
+            position: relative; /* Make it a relative position container */
+            overflow: hidden; /* Prevent content overflow */
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            margin: 0 auto; /* Centering the image */
+            display: block;
+            object-fit: scale-down; /* Ensure the image fits within the container */
+        }
+
+        .img2 {
+            width: 200mm;
+            height: 145mm; /* Adjust as needed */
+            overflow: hidden;
+            margin: 0 auto;
+            border: 1px solid black; /* Prevent content overflow */
+        }
+
+        /* Margin between last two sections */
+        .a4-sheet:last-of-type {
+            margin-top: 10px; /* Adjust as needed */
+        }
+
+        /* Hide button when printing */
+        @media print {
+            #downloadPDF {
+                display: none;
+            }
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg); /* Rotate the text and center it */
+            font-size: 76px; /* Adjust the font size as needed */
+            color: rgba(0, 0, 0, 0.7); /* Adjust the opacity as needed */
+            pointer-events: none; /* Make the watermark non-interactable */
+            z-index: 1000; /* Ensure the watermark appears on top */
+            white-space: nowrap; /* Prevent line breaks */
+        }
+
+        /* CSS adjustments for the second a4-sheet div */
+        .a4-sheet:nth-of-type(2) {
+            display: flex; /* Use flexbox to automatically align content */
+            flex-direction: column; /* Arrange children vertically */
+            align-items: center; /* Center items horizontally */
+            text-align: center; /* Center text within the container */
+        }
+
+        .a4-sheet:nth-of-type(2) h2 {
+            line-height: 2; /* Increase line height */
+        }
+    </style>
+
+</head>
+<body>
+<br>
+<div class="a4-sheet">
+    <img src="banner1.jpeg" width="10000" height="180" class="center">
+    <div class="watermark">Reported by Reporter</div>
+    <center>
+        <h1>
+            <div id="programType" class="center"></div>
+        </h1>
+        <h3 class="center"> on </h3>
+        <h1>
+            <div id="programName" class="center"></div>
+            <div id="date" class="center"></div>
+        </h1>
+        <h1 class="center">REPORT</h1>
+        <div class="qqq">
+            <img class="center" src="" alt="Uploaded Image" id="displayImage">
+        </div>
+        <br>
+    </center>
+</div>
+<br><br>
+<div class="a4-sheet">
+    <div class="watermark">Reported by Reporter</div>
+    <img src="banner1.jpeg" width="100" height="160" class="center">
+    <h2 class="center">To provide an insight on the <span id="programTypeSpan"></span> on <span
+                id="programNameSpan"></span>,<span id="programTypeSpan"></span>was arranged for <span
+                id="participantsSpan"></span> on <span id="dateSpan"></span>. It was organized by <span id="clubspan"></span>, <span
+                id="eventCoordinatorSpan"></span>. Dr. Maya Eapen, Head of the Department, Department of Computer
+        Science and Engineering started the event with an encouraging notes. The event was conducted with <span
+                id="participantsnoSpan"></span> students in <span id="venueSpan"></span>.The event coordinator
+        <span id="eventCoordinatorSpan1"></span> gave a detailed instruction for the event ,<span id="programNameSpan2"></span>.<br><br><br> The event ended with a formal vote of thanks where gratitude was paid to the
+        management, Principal, the Head of the Department, the faculty members and the supporting team for their support
+        and motivation in organizing such an informative and interesting event successfully.
+    </h2>
+</div>
+<br><br>
+<div class="a4-sheet">
+    <div class="watermark">Reported by Reporter</div>
+    <div class="img2">
+        <img class="center" src="" alt="Uploaded Image" id="displayImage1">
+    </div>
+    <br>
+    <div class="img2">
+        <img class="center" src="" alt="Uploaded Image" id="displayImage2">
+    </div>
+</div>
+<br><br>
+<div class="a4-sheet">
+    <div class="watermark">Reported by Reporter</div>
+    <div class="img2">
+        <img class="center" src="" alt="Uploaded Image" id="displayImage3">
+    </div>
+    <br>
+    <div class="img2">
+        <img class="center" src="" alt="Uploaded Image" id="displayImage4">
+    </div>
+</div>
+
+<button id="downloadPDF" onclick="printOrSavePDF();">Print or Save as PDF</button>
+<script>
+    // Retrieve form data from local storage
+    const formDataString = localStorage.getItem('eventFormData');
+
+    if (formDataString) {
+        // Parse the stored string back into an object
+        const formData = JSON.parse(formDataString);
+
+        // Display the form data
+        document.getElementById('programType').innerHTML = `<p>${formData.programType}</p>`;
+        document.getElementById('programName').innerHTML = `<p>${formData.programName}</p>`;
+        document.getElementById('date').innerHTML = `<p>${formData.date}</p>`;
+        document.getElementById('programNameSpan').textContent = formData.programName;
+        document.getElementById('programTypeSpan').textContent = formData.programType;
+        document.getElementById('participantsSpan').textContent = formData.participants;
+        document.getElementById('participantsnoSpan').textContent = formData.participantsno;
+        document.getElementById('dateSpan').textContent = formData.date;
+        document.getElementById('eventCoordinatorSpan').textContent = formData.eventCoordinator;
+        document.getElementById('clubspan').textContent = formData.club;
+        document.getElementById('venueSpan').textContent = formData.venue;
+        document.getElementById('programNameSpan2').textContent = formData.programName;
+    } else {
+        // If no form data is found, display a message 
+        document.getElementById('programType').textContent = 'No form data available.';
+    }
+
+    // Display uploaded images
+    const displayImage = document.getElementById('displayImage');
+    displayImage.src = localStorage.getItem('uploadedImage') || '';
+    const displayImage1 = document.getElementById('displayImage1');
+    displayImage1.src = localStorage.getItem('uploadedImage1') || '';
+    const displayImage2 = document.getElementById('displayImage2');
+    displayImage2.src = localStorage.getItem('uploadedImage2') || '';
+    const displayImage3 = document.getElementById('displayImage3');
+    displayImage3.src = localStorage.getItem('uploadedImage3') || '';
+    const displayImage4 = document.getElementById('displayImage4');
+    displayImage4.src = localStorage.getItem('uploadedImage4') || '';
+
+    // Function to redirect to temp5.html after printing
+    function redirectToTemp5() {
+        window.location.href = "temp5.html";
+    }
+
+    // Function to print or save as PDF
+    function printOrSavePDF() {
+        // Print the page
+        window.print();
+
+        // Redirect to temp5.html after printing
+        redirectToTemp5();
+    }
+</script>
+
+
+</body>
+</html>

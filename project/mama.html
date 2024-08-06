@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration and Image Upload</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+
+        }
+
+        form {
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="file"] {
+            margin-top: 5px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 80vh;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Video Background -->
+    <video id="video-background" autoplay muted loop>
+        <source src="writing_-_107240 (1440p).mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Event Registration Form -->
+    <form id="eventForm">
+        <h1>Event Report Generator</h1>
+
+        <label for="programType">Program Type:</label>
+        <select id="programType" name="programType" required>
+            <option value="workshop">Workshop</option>
+            <option value="seminar">Seminar</option>
+            <option value="Technical Event">Technical Event</option>
+            <option value="NonTechnical Event">Non-Technical Event</option>
+        </select>
+
+        <label for="programName">Program Name:</label>
+        <input type="text" id="programName" name="programName" required>
+
+        <label for="Date">Program Date:</label>
+        <input type="date" id="Date" name="Date" required>
+
+        <label for="Datee">Program Date(ending):</label>
+        <input type="date" id="Datee" name="Datee">
+
+        <label for="venue">Venue:</label>
+        <input type="text" id="venue" name="venue" required>
+
+        <label for="resourcePersonName">Resource Person Name:</label>
+        <input type="text" id="resourcePersonName" name="resourcePersonName">
+
+        <label for="resourcePersonDetails">Resource Person Details:</label>
+        <textarea id="resourcePersonDetails" name="resourcePersonDetails" rows="4" cols="50"></textarea>
+
+        <label for="participants">PARTICIPANTS:</label>
+        <input type="text" id="participants" name="participants">
+
+        <label for="participantsno">NO OF PARTICIPANTS:</label>
+        <input type="text" id="participantsno" name="participantsno">
+
+
+        <label for="club">CLUB OR ASSOCIATION:</label>
+        <input type="text" id="club" name="club">
+
+
+        <label for="eventCoordinator">Event Coordinator:</label>
+        <input type="text" id="eventCoordinator" name="eventCoordinator" required>
+
+        <label for="eventposter">Event Poster:</label>
+        <input type="file" accept="image/*" id="imageInput" required>
+        <button type="button" onclick="uploadImage()">Upload Image</button>
+
+        <label for="eventphoto1">Event Photo1:</label>
+        <input type="file" accept="image/*" id="imageInput1">
+        <button type="button" onclick="uploadImage1()">Upload Image</button>
+
+        <label for="eventphoto2">Event Photo2:</label>
+        <input type="file" accept="image/*" id="imageInput2">
+        <button type="button" onclick="uploadImage2()">Upload Image</button>
+
+        <label for="eventphoto3">Event Photo3:</label>
+        <input type="file" accept="image/*" id="imageInput3">
+        <button type="button" onclick="uploadImage3()">Upload Image</button>
+
+        <label for="eventphoto4">Event Photo4:</label>
+        <input type="file" accept="image/*" id="imageInput4">
+        <button type="button" onclick="uploadImage4()">Upload Image</button>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get form elements
+            const form = document.getElementById('eventForm');
+            const programTypeInput = document.getElementById('programType');
+            const programNameInput = document.getElementById('programName');
+            const dateInput = document.getElementById('Date');
+            const dateeInput = document.getElementById('Datee');
+            const venueInput = document.getElementById('venue');
+            const resourcePersonNameInput = document.getElementById('resourcePersonName');
+            const resourcePersonDetailsInput = document.getElementById('resourcePersonDetails');
+            const participantsInput = document.getElementById('participants');
+            const participantsnoInput = document.getElementById('participantsno');
+            const clubInput = document.getElementById('club');
+            const eventCoordinatorInput = document.getElementById('eventCoordinator');
+
+            // Add event listener to form submission
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Create an object to store form data
+                const formData = {
+                    programType: programTypeInput.value,
+                    programName: programNameInput.value,
+                    date: dateInput.value,
+                    datee: dateeInput.value,
+                    venue: venueInput.value,
+                    resourcePersonName: resourcePersonNameInput.value,
+                    resourcePersonDetails: resourcePersonDetailsInput.value,
+                    participants: participantsInput.value,
+                    participantsno: participantsnoInput.value,
+                    eventCoordinator: eventCoordinatorInput.value,
+                    club: clubInput.value,
+                };
+
+                // Convert the object to a string
+                const formDataString = JSON.stringify(formData);
+
+                // Store the form data in local storage with a unique key (you can modify the key if needed)
+                localStorage.setItem('eventFormData', formDataString);
+
+                // Redirect to another page
+                window.location.href = formData.programType === 'seminar' || formData.programType === 'workshop' ? 'temp4.html' : 'temp7.html';
+            });
+        });
+
+        // JavaScript for uploading images
+        function uploadImage() { 
+            alert("image uploaded successfully!");
+            var input = document.getElementById('imageInput');
+            var file = input.files[0];
+
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var imageUrl = e.target.result;
+                    localStorage.setItem('uploadedImage', imageUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function uploadImage1() {
+            alert("image uploaded successfully!");
+            var input1 = document.getElementById('imageInput1');
+            var file1 = input1.files[0];
+
+            if (file1) {
+                var reader1 = new FileReader();
+                reader1.onload = function (e) {
+                    var imageUrl1 = e.target.result;
+                    localStorage.setItem('uploadedImage1', imageUrl1);
+                };
+                reader1.readAsDataURL(file1);
+            }
+        }
+
+        function uploadImage2() {
+            alert("image uploaded successfully!");
+            var input2 = document.getElementById('imageInput2');
+            var file2 = input2.files[0];
+
+            if (file2) {
+                var reader2 = new FileReader();
+                reader2.onload = function (e) {
+                    var imageUrl2 = e.target.result;
+                    localStorage.setItem('uploadedImage2', imageUrl2);
+                };
+                reader2.readAsDataURL(file2);
+            }
+        }
+
+        function uploadImage3() {
+            alert("image uploaded successfully!");
+            var input3 = document.getElementById('imageInput3');
+            var file3 = input3.files[0];
+
+            if (file3) {
+                var reader3 = new FileReader();
+                reader3.onload = function (e) {
+                    var imageUrl3 = e.target.result;
+                    localStorage.setItem('uploadedImage3', imageUrl3);
+                };
+                reader3.readAsDataURL(file3);
+            }
+        }
+
+        function uploadImage4() {
+            alert("image uploaded successfully!");
+            var input4 = document.getElementById('imageInput4');
+            var file4 = input4.files[0];
+
+            if (file4) {
+                var reader4 = new FileReader();
+                reader4.onload = function (e) {
+                    var imageUrl4 = e.target.result;
+                    localStorage.setItem('uploadedImage4', imageUrl4);
+                };
+                reader4.readAsDataURL(file4);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
